@@ -49,7 +49,7 @@ const ProfilePage = () => {
       <header className="max-w-sm mx-auto p-3 m-5 rounded-md bg-gray-200 shadow-md">
         <div
           onClick={navigateBack}
-          className="flex items-center gap-2 cursor-pointer"
+          className="flex w-12 items-center gap-2 cursor-pointer hover:text-purple-400"
         >
           <img className="w-4 h-4" src={ChevronLeft} />
           <p>Back</p>
