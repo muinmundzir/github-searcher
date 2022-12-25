@@ -5,11 +5,13 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import Profile from "../components/Profile";
 import ChevronLeft from "../assets/ChevronLeft.svg";
+import RepoCard from "../components/RepoCard";
 
 const ProfilePage = () => {
   let { username } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState();
+  const [repos, setRepos] = useState();
 
   const getUserAPI = useCallback(async (username: string) => {
     try {
@@ -22,8 +24,20 @@ const ProfilePage = () => {
     }
   }, []);
 
+  const getUserReposAPI = useCallback(async (username: string) => {
+    try {
+      const result = await axios.get(
+        `https://api.github.com/users/${username}/repos`
+      );
+      setRepos(result.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
   useEffect(() => {
     getUserAPI(username!);
+    getUserReposAPI(username!);
   }, [username]);
 
   const navigateBack = () => {
@@ -42,6 +56,7 @@ const ProfilePage = () => {
         </div>
       </header>
       {user && <Profile user={user} />}
+      {repos && repos.map((repo) => <RepoCard key={repo.id} repo={repo} />)}
     </>
   );
 };
