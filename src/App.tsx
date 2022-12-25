@@ -1,25 +1,50 @@
-import { Fragment, useCallback, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  Fragment,
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import axios from "axios";
-import Profile from "./components/Profile";
 
-function App() {
+import UserCard from "./components/UserCard";
+
+function App(): JSX.Element {
+  const [query, setQuery] = useState<string>("");
   const [users, setUsers] = useState();
 
-  const getUsersAPI = useCallback(async () => {
-    try {
-      const result = await axios.get(
-        "https://api.github.com/users/muinmundzir"
-      );
-      console.log(result);
-      setUsers(result.data);
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+  const getUsersAPI = useCallback(
+    async (keyword: string) => {
+      try {
+        const result = await axios.get(
+          `https://api.github.com/search/users?q=${keyword}`
+        );
+        console.log(result);
+        setUsers(result.data.items);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [query]
+  );
 
-  useEffect(() => {
-    getUsersAPI();
+  // useEffect(() => {
+  //   getUsersAPI();
+  // }, []);
+
+  const handleSearch = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        getUsersAPI(query);
+      }
+    },
+    [getUsersAPI]
+  );
+
+  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
   }, []);
 
   return (
@@ -29,10 +54,12 @@ function App() {
           className="p-2 w-full rounded-md"
           type="text"
           name="input"
+          onKeyDown={handleSearch}
+          onChange={handleChange}
           placeholder="Search user.."
         />
       </header>
-      {users && <Profile users={users} />}
+      {users && users?.map((user) => <UserCard key={user.id} user={user} />)}
     </Fragment>
   );
 }
