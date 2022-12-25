@@ -20,7 +20,6 @@ const Home = () => {
         const result = await axios.get(
           `https://api.github.com/search/users?q=${keyword}`
         );
-        console.log(result);
         setUsers(result.data.items);
       } catch (err) {
         console.log(err);
@@ -55,6 +54,11 @@ const Home = () => {
         />
       </header>
       {users && users?.map((user) => <UserCard key={user.id} user={user} />)}
+      {!query && !users && (
+        <div className="max-w-sm mx-auto rouded-md bg-gray-200 rounded-md shadow-md p-3 text-center">
+          Insert username to search input on top of this page to start
+        </div>
+      )}
     </Fragment>
   );
 };
